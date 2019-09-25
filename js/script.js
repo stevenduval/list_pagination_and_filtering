@@ -2,49 +2,70 @@
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination.
 ******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
+// get children of the student list & set max number of students to show per page
+const list = document.querySelector('.student-list').children;
+const maxItemsPerPage = 10;
 
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
+//called to split students to separate pages
+const showPage = (list, page) => {
+   // get the starting index and ending index for each page
+   const startIndex = (page * maxItemsPerPage) - maxItemsPerPage; 
+   const endIndex = page * maxItemsPerPage;
+   // loop through elements to set display properties
+   for (let i = 0; i < list.length; i++) {
+      if (i >= startIndex && i < endIndex) {
+         list[i].style.display = '';
+      } else {
+         list[i].style.display = 'none';
+      }
+   }
+}
 
+//called to add pagination links to the bottom of the page
+const appendPageLinks = (list) => {
+   // see how many pages are needed
+   const pageCount = Math.ceil(list.length/maxItemsPerPage) + 1;
+   // create elements, appended them to eachother, set class name for the div for pagination list
+   const div = document.createElement('div');
+   const ul = document.createElement('ul');
+   div.className = 'pagination';
+   div.appendChild(ul);
+   document.querySelector('.page').appendChild(div);
+   // add li and a tags at the bottom of the page depending on how many pages
+   for (let i = 1; i < pageCount; i ++) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a['href']= '#';
+      a.textContent = i;
+      li.appendChild(a);
+      ul.appendChild(li);
+   }
+   // grab ul and all a tags from the above created pagination section
+   const paginationUL = document.querySelector('div.pagination ul');
+   const paginationA = paginationUL.querySelectorAll('li a');
+   // listen for clicks on the pagination ul
+   paginationUL.addEventListener('click', (e) => {
+      // loop through all anchors in pagination and remove active class
+      for (let i = 0; i < paginationA.length; i ++){
+         paginationA[i].classList.remove('active');
+      }
+      // if current clicked element is an <a> set its class to active
+      if (e.target.tagName === 'A') {
+         showPage(list, e.target.textContent);
+         e.target.className = 'active';
+      } 
+   });
+}
 
-
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
-
-
-
-
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
-
-
-
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
+//used so both functions listed can run on pageload
+const pageLoad = () =>{
+   appendPageLinks(list);
+   showPage(list, 1);
+   //set pagination link '1' to active so user knows what page they are on
+   document.querySelector('div.pagination ul li a').className = 'active';
+}
+// will trigger both functions that are in the pageLoad functions
+window.onload = () => {
+   pageLoad();
+}
