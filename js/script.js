@@ -68,4 +68,4 @@ const pageLoad = () =>{
 // will trigger both functions that are in the pageLoad functions
 window.onload = () => {
    pageLoad();
-}
+} 
