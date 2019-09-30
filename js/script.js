@@ -14,8 +14,9 @@ const showPage = (list, page) => {
    const endIndex = page * maxItemsPerPage;
    // loop through elements to set display properties
    for (let i = 0; i < list.length; i++) {
+      list[i].classList.remove('js-search-result');
       if (i >= startIndex && i < endIndex) {
-         list[i].style.display = '';
+         if (list[i].hasAttribute('style')){list[i].removeAttribute('style')}
       } else {
          list[i].style.display = 'none';
       }
@@ -26,7 +27,7 @@ const showPage = (list, page) => {
 const appendPageLinks = (list) => {
    // see how many pages are needed
    const pageCount = Math.ceil(list.length/maxItemsPerPage) + 1;
-   // create elements, appended them to eachother, set class name for the div for pagination list
+   // create div & ul, append them to eachother, set class name for the div for pagination list
    const div = document.createElement('div');
    const ul = document.createElement('ul');
    div.className = 'pagination';
@@ -57,6 +58,55 @@ const appendPageLinks = (list) => {
       } 
    });
 }
+
+// insert search bar
+const searchInsert = document.querySelector('.page-header');
+const searchDiv = document.createElement('div');
+searchDiv.className = 'student-search';
+const searchInput = document.createElement('input');
+const searchBtn = document.createElement('button');
+searchBtn.innerText = 'Search';
+searchDiv.appendChild(searchInput);
+searchDiv.appendChild(searchBtn);
+searchInsert.appendChild(searchDiv);
+
+// search ability
+const names = document.querySelectorAll('.student-details h3');
+const searchBox = document.querySelector('.student-search');
+
+
+searchBox.addEventListener('click', () => {
+   search();
+});  
+
+
+const search = () => {
+   const searchBoxValue = document.querySelector('.student-search input').value;
+   const page = document.querySelector('.page');
+   const pagination = document.querySelector('.pagination');
+   if (searchBoxValue.length <= 0) {
+      page.removeChild(pagination);
+      pageLoad();
+   } else {
+      page.removeChild(pagination);
+      for (let i = 0; i < names.length; i++) {
+         if (names[i].innerText.toLowerCase().includes(searchBoxValue.toLowerCase())) {
+            names[i].parentNode.parentNode.classList.add('js-search-result');
+            if (names[i].parentNode.parentNode.hasAttribute('style')){names[i].parentNode.parentNode.removeAttribute('style')}
+         } else {
+            names[i].parentNode.parentNode.classList.remove('js-search-result');
+            names[i].parentNode.parentNode.style.display = 'none';
+         }
+      }
+      const newList = document.querySelectorAll('.js-search-result');
+      appendPageLinks(newList);
+      showPage(newList, 1);
+      document.querySelector('div.pagination ul li a').className = 'active';
+   }
+}
+
+
+
 
 //used so both functions listed can run on pageload
 const pageLoad = () =>{
