@@ -76,14 +76,19 @@ const search = (event) => {
    const searchBoxValue = document.querySelector('.student-search input').value;
    const page = document.querySelector('.page');
    const pagination = document.querySelector('.pagination');
+   const resultsMsgCheck = document.querySelector('.js-no-results');
+   // function to remove pagination if it exsits
+   const paginationRemove = () => {
+      if (pagination) {
+         page.removeChild(pagination);
+      }
+   }
    // if search box is empty remove old pagination and run the same functions that are ran on page load
    if (searchBoxValue.length <= 0) {
-      page.removeChild(pagination);
+      paginationRemove();
       pageLoad();
    } else {
-      //remove old pagination links
-      page.removeChild(pagination);
-      //loop through the students
+      //loop through the students if search isnt empty
       for (let i = 0; i < studentNames.length; i++) {
          //if student name matches search box value add js-search result class and remove style tag
          if (studentNames[i].innerText.toLowerCase().includes(searchBoxValue.toLowerCase())) {
@@ -91,23 +96,39 @@ const search = (event) => {
             if (studentNames[i].parentNode.parentNode.hasAttribute('style')){
                studentNames[i].parentNode.parentNode.removeAttribute('style')
             }
-         //if student name does not match remove js-search-result class and set display to none
+         //if student name does not match search, remove js-search-result class and set display to none
          } else {
             studentNames[i].parentNode.parentNode.classList.remove('js-search-result');
             studentNames[i].parentNode.parentNode.style.display = 'none';
          }
       }
-      //pass new list to both functions so pagination links can be regenerated
+      //grab search results and check if no results message is present
       const newList = document.querySelectorAll('.js-search-result');
-      appendPageLinks(newList);
-      showPage(newList, 1);
-      document.querySelector('div.pagination ul li a').className = 'active';
+      if (resultsMsgCheck) {
+         page.removeChild(resultsMsgCheck);
+      }
+      //if newly generated list greater than zero remove old pagination and rerun functions to add pagination
+      if (newList.length > 0) {
+         paginationRemove();
+         appendPageLinks(newList);
+         showPage(newList, 1);
+         document.querySelector('div.pagination ul li a').className = 'active';
+      // if search results are empty remove pagination if it exists and return no results message
+      } else {
+         paginationRemove();
+         const noResults = document.createElement('div');
+         const resultsMsg = 'Your search returned zero results.';
+         noResults.innerText = resultsMsg; 
+         noResults.className = 'js-no-results';
+         page.appendChild(noResults);
+      }
    }
 }
 
 //adding click and keyup events to trigger search function
-window.addEventListener('click', search, false);
-window.addEventListener('keyup', search, false);
+const searchBox = document.querySelector('.student-search');
+searchBox.addEventListener('click', search, false);
+searchBox.addEventListener('keyup', search, false);
 
 //used so both functions listed can run on pageload
 const pageLoad = () =>{
