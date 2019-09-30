@@ -59,7 +59,7 @@ const appendPageLinks = (list) => {
    });
 }
 
-// insert search bar
+// insert search bar and set appropriate classes
 const searchInsert = document.querySelector('.page-header');
 const searchDiv = document.createElement('div');
 searchDiv.className = 'student-search';
@@ -70,34 +70,34 @@ searchDiv.appendChild(searchInput);
 searchDiv.appendChild(searchBtn);
 searchInsert.appendChild(searchDiv);
 
-// search ability
-const names = document.querySelectorAll('.student-details h3');
-const searchBox = document.querySelector('.student-search');
-
-
-searchBox.addEventListener('click', () => {
-   search();
-});  
-
-
-const search = () => {
+// search function
+const search = (event) => {
+   const studentNames = document.querySelectorAll('.student-details h3');
    const searchBoxValue = document.querySelector('.student-search input').value;
    const page = document.querySelector('.page');
    const pagination = document.querySelector('.pagination');
+   // if search box is empty remove old pagination and run the same functions that are ran on page load
    if (searchBoxValue.length <= 0) {
       page.removeChild(pagination);
       pageLoad();
    } else {
+      //remove old pagination links
       page.removeChild(pagination);
-      for (let i = 0; i < names.length; i++) {
-         if (names[i].innerText.toLowerCase().includes(searchBoxValue.toLowerCase())) {
-            names[i].parentNode.parentNode.classList.add('js-search-result');
-            if (names[i].parentNode.parentNode.hasAttribute('style')){names[i].parentNode.parentNode.removeAttribute('style')}
+      //loop through the students
+      for (let i = 0; i < studentNames.length; i++) {
+         //if student name matches search box value add js-search result class and remove style tag
+         if (studentNames[i].innerText.toLowerCase().includes(searchBoxValue.toLowerCase())) {
+            studentNames[i].parentNode.parentNode.classList.add('js-search-result');
+            if (studentNames[i].parentNode.parentNode.hasAttribute('style')){
+               studentNames[i].parentNode.parentNode.removeAttribute('style')
+            }
+         //if student name does not match remove js-search-result class and set display to none
          } else {
-            names[i].parentNode.parentNode.classList.remove('js-search-result');
-            names[i].parentNode.parentNode.style.display = 'none';
+            studentNames[i].parentNode.parentNode.classList.remove('js-search-result');
+            studentNames[i].parentNode.parentNode.style.display = 'none';
          }
       }
+      //pass new list to both functions so pagination links can be regenerated
       const newList = document.querySelectorAll('.js-search-result');
       appendPageLinks(newList);
       showPage(newList, 1);
@@ -105,8 +105,9 @@ const search = () => {
    }
 }
 
-
-
+//adding click and keyup events to trigger search function
+window.addEventListener('click', search, false);
+window.addEventListener('keyup', search, false);
 
 //used so both functions listed can run on pageload
 const pageLoad = () =>{
