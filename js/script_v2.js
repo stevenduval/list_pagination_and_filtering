@@ -90,7 +90,7 @@ const search = (event) => {
    if (noResultMsgCheck) page.removeChild(noResultMsgCheck);
    if (newList.length <= 0) {
       const noResult = document.createElement('div');
-      noResult.innerText = 'ysnns';
+      noResult.innerText = 'Your search returned zero results';
       noResult.className = 'no-results';
       page.appendChild(noResult);
    } else {
